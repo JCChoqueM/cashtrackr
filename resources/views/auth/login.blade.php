@@ -1,5 +1,11 @@
-@extends('layouts.base')
+@extends('layouts.auth')
 
+@section('title')
+    Iniciar Sesión
+@endsection
+
+
+@section('auth-contents')
 <form class="mt-14 space-y-5" novalidate>
     <div class="flex flex-col gap-2">
         <label class="font-bold text-2xl" for="email">Email</label>
