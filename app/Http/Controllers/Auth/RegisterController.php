@@ -7,6 +7,7 @@ use App\Http\Requests\SingupRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -21,12 +22,13 @@ class RegisterController extends Controller
         $data =  $request->validated();
 
         // almacena la base de datos
-       $user= User::create($data);
+        $user = User::create($data);
 
-    event(new Registered($user));
+        event(new Registered($user));
+
+        Auth::login($user);
 
 
-
-
+        return redirect()->route('verification.notice');
     }
 }
