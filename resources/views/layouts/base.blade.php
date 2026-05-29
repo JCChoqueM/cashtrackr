@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
     <title>{{ config('app.name', 'CashTrackr') }} - @yield('title')</title>
 
@@ -20,23 +23,32 @@
     <header class="bg-purple-950 py-5">
         <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:justify-between ">
             <div class="w-full max-w-100">
-                <img src="{{ asset('img/logo.svg') }}   " alt="CashTrackr Logo" class="w-full block">
+                <img
+                    src="{{ asset('img/logo.svg') }}   "
+                    alt="CashTrackr Logo"
+                    class="w-full block"
+                >
             </div>
 
-            @if (Route::has('login'))
-                <nav class="flex flex-col lg:flex-row items-center gap-4 ">
-                <a 
-                href="{{ route('login') }}"
-                class="text-white text-lg font-bold hover:underline uppercase p-2" 
-                >Iniciar Sesión </a>
+            <nav class="flex flex-col lg:flex-row items-center gap-4 ">
 
-                <a 
-                href="{{ route('register') }}"
-                class="font-bold  uppercase border-2 border-amber-500 px-5 py-2 text-amber-500"
-                >Crear Cuenta</a>
+                @auth
+                    <p class=" text-white text-xL">Hola: {{ auth()->user()->name }}</p>
+                @else
+                    @if (Route::has('login'))
+                        <a
+                            href="{{ route('login') }}"
+                            class="text-white text-lg font-bold hover:underline uppercase p-2"
+                        >Iniciar Sesión </a>
+
+                        <a
+                            href="{{ route('register') }}"
+                            class="font-bold  uppercase border-2 border-amber-500 px-5 py-2 text-amber-500"
+                        >Crear Cuenta</a>
+                    @endif
+                @endauth
             </nav>
-            @endif
-            
+
         </div>
 
     </header>
