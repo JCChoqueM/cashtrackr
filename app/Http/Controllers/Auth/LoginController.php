@@ -9,22 +9,22 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-     public function index()
+    public function index()
     {
         return view('auth.login');
     }
 
     public function store(SignInRequest $request)
     {
-         $data = $request->validated();
+        $data = $request->validated();
 
-         if (!Auth::attempt($data, true )) {
+        if (!Auth::attempt($data, true)) {
             return back()->with(
-                'error','Las credenciales son Incorrectas',
+                'error',
+                'Las credenciales son Incorrectas',
             );
-         }
+        }
 
-         return redirect()->route('dashboard');
-         
+        return redirect()->route('dashboard');
     }
 }
