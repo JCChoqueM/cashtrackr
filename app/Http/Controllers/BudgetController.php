@@ -35,16 +35,7 @@ class BudgetController extends Controller
     public function store(BudgetRequest $request)
     {
         $data = $request->validated();
-        //\dd($data);
-
-        $user_id= Auth::id();
-
-        $budget = Budget::create([
-            'name' => $data['name'],
-            'amount' => $data['amount'],
-            'type' => $data['type'],
-            'user_id' => $user_id
-        ]);
+        $budget = Auth::user()->budgets()->create($data);
         return redirect()->route('dashboard');
     }
 
