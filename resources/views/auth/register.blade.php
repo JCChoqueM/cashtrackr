@@ -9,7 +9,7 @@
           action={{ route('register.store') }}
           class="mt-14 space-y-5"
           novalidate>
-        @csrf {{-- ← agregar esto --}}
+        @csrf 
         <div class="space-y-2">
             <label class="font-bold text-2xl block"
                    for="name">Nombre</label>
