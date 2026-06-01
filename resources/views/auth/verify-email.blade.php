@@ -7,11 +7,7 @@
 @section('auth-contents')
     <p class="mt-5 text-lg">tu cuenta fue creada con exito, revisa tu correo para confirmarla</p>
 
-    @if (session('success'))
-        <x-alert
-            :message="session('success')"
-        />
-    @endif
+ 
     <form
         method="POST"
         action="{{ route('verification.send') }}"

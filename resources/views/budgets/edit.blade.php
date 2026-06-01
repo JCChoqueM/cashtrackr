@@ -22,7 +22,7 @@
 @section('dashboard-contents')
     <form
         method="POST"
-        action=" {{ route('budgets.update') }}"
+        action=" {{ route('budgets.update', $budget) }}"
         class="mt-14 space-y-3 max-w-2xl mx-auto"
         novalidate
     >
