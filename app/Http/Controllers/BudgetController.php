@@ -57,13 +57,15 @@ class BudgetController extends Controller
      */
     public function edit(Budget $budget)
     {
-        //
+       return view('budgets.edit', [
+        'budget' => $budget
+       ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Budget $budget)
+    public function update(BudgetRequest $request, Budget $budget)
     {
         //
     }
