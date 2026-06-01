@@ -21,9 +21,12 @@
 
 @section('dashboard-contents')
     <form
+        method="POST"
+        action="{{ route('budgets.store') }}"
         class="mt-14 space-y-3 max-w-2xl mx-auto"
         novalidate
     >
+        @csrf
         <x-budget-form />
         <input
             type="submit"
