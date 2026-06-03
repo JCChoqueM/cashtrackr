@@ -81,8 +81,7 @@ class BudgetController extends Controller
     #[Authorize('delete', 'budget')]
     public function destroy(Budget $budget)
     {
-        /** @phpstan-ignore argument.count */
-        $budget->delete(); // @phpstan-ignore-line
+        $budget->delete(); 
 
         return redirect()->route('dashboard')->with('success', 'Presupuesto eliminado correctamente');
     }
