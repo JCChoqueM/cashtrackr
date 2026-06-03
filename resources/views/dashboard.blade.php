@@ -58,6 +58,13 @@
                                             :budget="$budget"
                                            
                                         />
+
+                                        <x-confirm-delete
+                                            :id="'delete-dialog-' . $budget->id"
+                                            :title="'Eliminar Presupuesto '. $budget->name"
+                                            message="Esta acción no se puede deshacer"
+                                            :action="route('budgets.destroy', $budget)"
+                                        />
                                     </td>
                                 </tr>
                             @endforeach
