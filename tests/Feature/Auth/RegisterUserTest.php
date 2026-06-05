@@ -36,6 +36,7 @@ it('registers a new user as unverified and dispatches the registered event', fun
     ]);
 
     $response->assertRedirect(route('verification.notice'));
+    // @ts-ignore
     $user = User::where('email', 'prueba@prueba.com')->first();
 
     expect($user)->not()->toBeNull();

@@ -74,11 +74,11 @@
             </div>
         </div>
     @else
-        <p class="text-center text-xl mt-10 ">No Hay Presupuestos.
+        <p class="text-center text-xl mt-10 ">No hay presupuestos.
             <a
                 href="{{ route('budgets.create') }}"
                 class="text-amber-500"
-            >Comienza creando uno</a>
+            >Comienza creando uno.</a>
         </p>
     @endif
 @endsection
