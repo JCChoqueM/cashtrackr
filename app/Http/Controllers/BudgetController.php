@@ -50,7 +50,7 @@ class BudgetController extends Controller
      */
     public function show(Budget $budget)
     {
-        //
+       \dd('desde show');
     }
 
     /**

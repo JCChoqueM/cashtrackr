@@ -25,7 +25,7 @@
     >
         <div class="py-1">
             <a
-                href=""
+                href="{{ route('budgets.show', $budget) }}"
                 class="block px-4 py-2 text-sm text-gray-700 focus:bg-gray-100 focus:text-gray-900 focus:outline-hidden dark:text-gray-300 dark:focus:bg-white/5 dark:focus:text-white"
             >Ver Presupuesto</a>
 

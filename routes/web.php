@@ -56,6 +56,9 @@ Route::prefix('dashboard')->group(function () {
 
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
 
+    //parte de react
+    Route::get('/budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
+
     //Route Model Binding
     //mostrar el formulario
     Route::get('/budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
