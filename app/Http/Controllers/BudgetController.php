@@ -83,6 +83,6 @@ class BudgetController extends Controller
     {
         $budget->delete();
 
-        return redirect()->route('dashboard')->with('success', 'Presupuesto eliminado correctamente');
+        return redirect()->route('dashboard')->with('success', 'Presupuesto eliminado correctamente.');
     }
 }
