@@ -52,9 +52,96 @@ it('assing the created budget to the authenticated user', function () {
         'name' => 'Viaje a las Vegas',
         'amount' => 10000,
         'type' => 'goal',
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
     $budget = Budget::first();
     expect($budget->user_id)->toBe($user->id);
 
 });
+
+it('creates a budget and redirectes with success message', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->post(route('budgets.store'), [
+        'name' => 'Viaje a las Vegas',
+        'amount' => 10000,
+        'type' => 'goal',
+    ]);
+    $response->assertRedirect(route('dashboard'));
+    $response->assertSessionHas('success', 'Presupuesto creado correctamente');
+});
+
+/* SECTION  dificil[inicio] */
+it('does not allow unverified users to create budget', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => null,
+    ]);
+    $response = $this->actingAs($user)->post(route('budgets.store'), [
+        'name' => 'Viaje a las Vegas',
+        'amount' => 10000,
+        'type' => 'goal',
+    ]);
+
+    $response->assertRedirect(route('verification.notice'));
+
+});
+
+it('validates amount must be agreater than zero', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)
+        ->from(route('budgets.create'))
+        ->post(route('budgets.store'), [
+            'name' => 'Boda',
+            'amount' => -10,
+            'type' => 'General',
+        ]);
+
+    $response->assertRedirect(route('budgets.create'));
+    $response->assertSessionHasErrors([
+        'amount',
+    ]);
+});
+
+it('validate type must be valid', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)
+        ->from(route('budgets.create'))
+        ->post(route('budgets.store'), [
+            'name' => 'Boda',
+            'amount' => 100,
+            'type' => 'not_valid',
+        ]);
+
+    $response->assertRedirect(route('budgets.create'));
+    $response->assertSessionHasErrors([
+        'type',
+    ]);
+});
+
+it('accept valid budget types', function () {
+    $user = User::factory()->create([
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->actingAs($user)->post(route('budgets.store'), [
+            'name' => 'Boda',
+            'amount' => 100,
+            'type' => 'general',
+        ]);
+
+  
+    $response->assertSessionDoesntHaveErrors();
+
+    $this->assertDatabaseHas('budgets', [
+        'type' => 'general',
+    ]);
+});
+/* !SECTION  fin - dificil[fin] */
