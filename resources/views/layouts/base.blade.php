@@ -9,6 +9,7 @@
     >
 
     <title>{{ config('app.name', 'CashTrackr') }} - @yield('title')</title>
+     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @fonts
 
