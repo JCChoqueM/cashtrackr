@@ -72,7 +72,7 @@ class BudgetController extends Controller
     {
         $budget->update($request->validated());
 
-        return redirect()->route('dashboard')->with('success', 'Presupuesto actualizado correctamente');
+        return redirect()->route('dashboard')->with('success', 'Presupuesto actualizado correctamente.');
     }
 
     /**
