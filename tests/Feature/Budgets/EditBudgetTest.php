@@ -36,5 +36,13 @@ it('does not allow other users to view the edit budget form', function () {
     $owner = User::factory()->create([
         'email_verified_at' => now(),
     ]);
+ $otherUser = User::factory()->create([
+        'email_verified_at' => now(),
+    ]);
 
+
+    $budget = Budget::factory()->for($owner)->create();
+    $response = $this->actingAs($otherUser)->get(route('budgets.edit', $budget));
+    $response->assertForbidden();//incluye error 403
+    $response->assertSee('No tienes permisos para editar este presupuesto');
 });
