@@ -29,7 +29,7 @@ it('allows the owner to update a budget', function () {
         'name' => 'Presupuesto Actualizado',
         'amount' => 1500,
         'type' => 'goal',
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
 });
@@ -41,6 +41,21 @@ it('validates required fields when updating a budget', function () {
 
     $budget = Budget::factory()->for($user)->create();
 
+    $response = $this->actingAs($user)
+        ->from(route('budgets.edit', $budget))
+        ->put(route('budgets.update', $budget), [
+            'name' => '',
+            'amount' => '',
+            'type' => '',
+        ]);
+
+    $response->assertRedirect(route('budgets.edit', $budget));
+    $response->assertSessionHasErrors([
+        'name',
+        'amount',
+        'type',
+    ]);
+
 });
 
 it('validates amount must be greater than zero when updating a budget', function () {
@@ -49,7 +64,16 @@ it('validates amount must be greater than zero when updating a budget', function
     ]);
 
     $budget = Budget::factory()->for($user)->create();
+    $response = $this->actingAs($user)
+        ->from(route('budgets.edit', $budget))
+        ->put(route('budgets.update', $budget), [
+            'name' => 'Presupuesto',
+            'amount' => 0,
+            'type' => 'general',
+        ]);
 
+    $response->assertRedirect(route('budgets.edit', $budget));
+    $response->assertSessionHasErrors(['amount']);
 });
 
 it('validates type must be valid when updating a budget', function () {
@@ -58,6 +82,17 @@ it('validates type must be valid when updating a budget', function () {
     ]);
 
     $budget = Budget::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)
+        ->from(route('budgets.edit', $budget))
+        ->put(route('budgets.update', $budget), [
+            'name' => 'Presupuesto',
+            'amount' => 1000,
+            'type' => 'not_valid',
+        ]);
+
+    $response->assertRedirect(route('budgets.edit', $budget));
+    $response->assertSessionHasErrors(['type']);
 
 });
 
@@ -68,6 +103,14 @@ it('does not allow guests to update budgets', function () {
 
     $budget = Budget::factory()->for($user)->create();
 
+    $response = $this->put(route('budgets.update', $budget), [
+        'name' => 'Presupuesto Actualizado',
+        'amount' => 1000,
+        'type' => 'goal',
+    ]);
+
+    $response->assertRedirect(route('login'));
+
 });
 
 it('does not allow other users to update budgets', function () {
@@ -77,6 +120,24 @@ it('does not allow other users to update budgets', function () {
 
     $otherUser = User::factory()->create([
         'email_verified_at' => now(),
+    ]);
+
+    $budget= Budget::factory()->for($owner)->create([
+        'name' => 'Presupuesto Original',
+    ]);
+
+    $response=$this->actingAs($otherUser)->put(route('budgets.update', $budget), [
+        'name'=>'Hackeado!!',
+        'amount' => 999999,
+        'type' => 'goal',
+    ]);
+
+
+    $response->assertForbidden();
+
+    $this->assertDatabaseHas('budgets', [
+        'id' => $budget->id,
+        'name' => 'Presupuesto Original'
     ]);
 
 });
