@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BudgetController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\LogoutController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -16,7 +17,6 @@ Route::get('/auth/register', [RegisterController::class, 'index'])->name('regist
 Route::post('/auth/register', [RegisterController::class, 'store'])->name('register.store');
 /* !section  fin - register[fin] */
 
-
 /* section1 login[inicio] */
 Route::get('/auth/login', [LoginController::class, 'index'])->name('login');
 Route::post('/auth/login', [LoginController::class, 'store'])->name('login.store');
@@ -27,9 +27,9 @@ Route::post('/auth/logout', [LogoutController::class, 'store'])->name('logout.st
 
 /* !section2 fin - logout[fin] */
 
-
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
+
     return redirect()->route('dashboard')->with('success', 'Tu cuenta ha sido verificada.');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
@@ -44,9 +44,6 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('success', 'Se ha enviado el correo de verificacion.');
 })->middleware(['auth', 'throttle:1,1'])->name('verification.send');
 
-
-
-
 /* SECTION  agrupado[inicio] */
 Route::prefix('dashboard')->group(function () {
 
@@ -56,16 +53,16 @@ Route::prefix('dashboard')->group(function () {
 
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
 
-    //parte de react
+    // parte de react
     Route::get('/budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
 
-    //Route Model Binding
-    //mostrar el formulario
+    // Route Model Binding
+    // mostrar el formulario
     Route::get('/budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
-    //procesar lo del formulario
+    // procesar lo del formulario
     Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+    Route::post('/budgets/{budget}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
 });
-
 
 /* !SECTION  fin - agrupado[fin] */
