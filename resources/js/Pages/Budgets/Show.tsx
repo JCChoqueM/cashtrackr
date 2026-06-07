@@ -1,10 +1,12 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import { ToastContainer, toast } from 'react-toastify';
 
 import { Budget } from '@/types/budget';
 import AmountDisplay from '@/Components/AmountDisplay';
 import ExpenseModal from '@/Components/ExpenseModal';
 import { useExpenseModalStore } from '@/stores/expense-modal-store';
 import { Category } from '@/types/category';
+import { useEffect } from 'react';
 
 type Props = {
   budget: Budget;
@@ -12,11 +14,17 @@ type Props = {
 };
 
 export default function Show({ budget, categories }: Props) {
+  const { flash } = usePage().props;
+
   const openCreateModal = useExpenseModalStore((state) => state.openCreateModal);
-  useExpenseModalStore.getState().setBudget(budget)
-  useExpenseModalStore.getState().setCategories(categories)
+  useExpenseModalStore.getState().setBudget(budget);
+  useExpenseModalStore.getState().setCategories(categories);
 
-
+  useEffect(() => {
+    if (flash.success) {
+      toast.success(flash.success);
+    }
+  }, [flash]);
 
   return (
     <>
@@ -57,13 +65,17 @@ export default function Show({ budget, categories }: Props) {
         <div className="flex  items-center justify-between">
           <h2 className="text-3xl font-bold">Gastos</h2>
 
-          <button className="bg-purple-950 hover:bg-purple-800 px-5 py-2 my-5 rounded-lg text-white font-bold text-xl cursor-pointer" onClick={openCreateModal}>
+          <button
+            className="bg-purple-950 hover:bg-purple-800 px-5 py-2 my-5 rounded-lg text-white font-bold text-xl cursor-pointer"
+            onClick={openCreateModal}
+          >
             Nuevo Gasto
           </button>
         </div>
       </section>
 
       <ExpenseModal />
+      <ToastContainer />
     </>
   );
 }

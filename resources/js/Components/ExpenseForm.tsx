@@ -1,13 +1,16 @@
 import { useForm } from '@inertiajs/react';
 import { useExpenseModalStore } from '@/stores/expense-modal-store';
 import Ziggy from '@/ziggy';
-import {route}from 'ziggy-js';
+import { route } from 'ziggy-js';
+import InputError from './InputError';
 
 export default function ExpenseForm() {
   const budget = useExpenseModalStore((state) => state.budget);
   const categories = useExpenseModalStore((state) => state.categories);
+  const closeModal = useExpenseModalStore((state) => state.closeModal);
 
-  const { data, setData,post } = useForm({
+  const { data, setData, post, errors, reset, processing } = useForm({
+    //hook para manejar formularios
     name: '',
     amount: '',
     category: '',
@@ -16,15 +19,22 @@ export default function ExpenseForm() {
   if (!budget) return null;
 
   const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
-e.preventDefault();
+    e.preventDefault();
 
-post(route('expenses.store', budget.id));
-   
+    post(route('expenses.store', budget.id), {
+      onSuccess: () => {
+        reset();
+        closeModal();
+      },
+    });
   };
 
   return (
     <div className="p-10 flex justify-center">
-      <form onSubmit={submit} className="flex flex-col space-y-3 w-full">
+      <form
+        onSubmit={submit}
+        className="flex flex-col space-y-3 w-full"
+      >
         <div className="space-y-3">
           <label
             htmlFor="name"
@@ -40,6 +50,7 @@ post(route('expenses.store', budget.id));
             value={data.name}
             onChange={(e) => setData('name', e.target.value)}
           />
+          {errors.name && <InputError>{errors.name}</InputError>}
         </div>
 
         <div className="space-y-3">
@@ -57,6 +68,7 @@ post(route('expenses.store', budget.id));
             value={data.amount}
             onChange={(e) => setData('amount', e.target.value)}
           />
+          {errors.amount && <InputError>{errors.amount}</InputError>}
         </div>
 
         {budget.type === 'general' && (
@@ -85,14 +97,16 @@ post(route('expenses.store', budget.id));
                 </option>
               ))}
             </select>
+            {errors.category && <InputError>{errors.category}</InputError>}
           </div>
         )}
 
         <button
+          disabled={processing}
           type="submit"
-          className="mt-5 bg-purple-950 hover:bg-purple-800 w-full p-3 rounded-lg text-white font-bold  text-xl cursor-pointer"
+          className={`${processing ? 'opacity-60 cursor-not-allowed' : ' hover:bg-purple-800 cursor-pointer'} bg-purple-950 mt-5  w-full p-3 rounded-lg text-white font-bold  text-xl `}
         >
-          Agregar Gasto
+          {processing ? 'Guardando...' : 'Agregar Gasto'}
         </button>
       </form>
     </div>
