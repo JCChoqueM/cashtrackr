@@ -1,6 +1,6 @@
 
 export default function Show() {
   return (
-    <div>Show</div>
+    <div>show22</div>
   )
 }
