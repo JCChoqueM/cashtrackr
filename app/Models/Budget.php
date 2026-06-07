@@ -11,11 +11,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable(['name', 'amount', 'type', 'user_id'])]
 class Budget extends Model
 {
+    use HasFactory,SoftDeletes;
 
-use SoftDeletes,HasFactory;
-   
-    protected $casts=[
-        'type'=>BudgetType::class
+    protected $casts = [
+        'type' => BudgetType::class,
     ];
 
     public function user()
@@ -23,13 +22,19 @@ use SoftDeletes,HasFactory;
         return $this->belongsTo(User::class);
     }
 
-       public function isGeneral():bool
-       {
-        return $this->type === BudgetType::General;
-       } 
 
-        public function isGoal():bool
-       {
-          return $this->type === BudgetType::Goal;
-       }
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function isGeneral(): bool
+    {
+        return $this->type === BudgetType::General;
+    }
+
+    public function isGoal(): bool
+    {
+        return $this->type === BudgetType::Goal;
+    }
 }

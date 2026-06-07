@@ -1,17 +1,25 @@
-
-import {Head} from '@inertiajs/react'
+import { Head } from '@inertiajs/react';
 
 import { Budget } from '@/types/budget';
 import AmountDisplay from '@/Components/AmountDisplay';
+import ExpenseModal from '@/Components/ExpenseModal';
+import { useExpenseModalStore } from '@/stores/expense-modal-store';
+import { Category } from '@/types/category';
 
 type Props = {
   budget: Budget;
+  categories: Category[];
 };
 
-export default function Show({ budget }: Props) {
+export default function Show({ budget, categories }: Props) {
+  const openCreateModal = useExpenseModalStore((state) => state.openCreateModal);
+  useExpenseModalStore.getState().setBudget(budget)
+  useExpenseModalStore.getState().setCategories(categories)
+
+
+
   return (
     <>
-
       <Head title={`Presupuesto:${budget.name}`} />
       <section className="sm:flex sm:items-center mt-10">
         <div className="sm:flex-auto">
@@ -30,16 +38,32 @@ export default function Show({ budget }: Props) {
 
       <main className="grid grid-cols-1 md:grid-cols-2 items-center gap-20 mt-10">
         <div className="space-y-5">
-
-          <AmountDisplay label='Presupuesto' amount={+budget.amount}/>
-          <AmountDisplay label='Gastado' amount={0}/>
-          <AmountDisplay label='Restante' amount={0} />
-      
-
-     
-
+          <AmountDisplay
+            label="Presupuesto"
+            amount={+budget.amount}
+          />
+          <AmountDisplay
+            label="Gastado"
+            amount={0}
+          />
+          <AmountDisplay
+            label="Restante"
+            amount={0}
+          />
         </div>
       </main>
+
+      <section className="p-10 lg:px-5 shadow-lg mt-10">
+        <div className="flex  items-center justify-between">
+          <h2 className="text-3xl font-bold">Gastos</h2>
+
+          <button className="bg-purple-950 hover:bg-purple-800 px-5 py-2 my-5 rounded-lg text-white font-bold text-xl cursor-pointer" onClick={openCreateModal}>
+            Nuevo Gasto
+          </button>
+        </div>
+      </section>
+
+      <ExpenseModal />
     </>
   );
 }
