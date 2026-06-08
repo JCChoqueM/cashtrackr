@@ -15,11 +15,11 @@ export default function ExpenseForm() {
 
   console.log(isEditing);
 
-  const { data, setData, post, errors, reset, processing } = useForm({
+  const { data, setData, post, put, errors, reset, processing } = useForm({
     //hook para manejar formularios
-    name: '',
-    amount: '',
-    category: '',
+    name: expense?.name ?? '',
+    amount: expense?.amount ?? '',
+    category: expense?.category ?? '',
   });
 
   if (!budget) return null;
@@ -27,11 +27,23 @@ export default function ExpenseForm() {
   const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isEditing && expense) {
+      put(route('expenses.update', [budget.id, expense.id]), {
+        onSuccess: () => {
+          reset();
+          closeModal();
+        },
+        preserveScroll: true,
+      });
+      return;
+    }
+
     post(route('expenses.store', budget.id), {
       onSuccess: () => {
         reset();
         closeModal();
       },
+      preserveScroll: true,
     });
   };
 

@@ -19,9 +19,12 @@ class ExpenseController extends Controller
             ->with('success', 'Gasto Registrado Correctamente');
     }
 
-    public function update(Request $request, Expense $expense)
+    public function update(ExpenseRequest $request, Budget $budget, Expense $expense)
     {
-        //
+       $expense->update($request->validated());
+          return redirect()
+            ->route('budgets.show', $budget)
+            ->with('success', 'Gasto Actualizado Correctamente');
     }
 
     public function destroy(Expense $expense)
