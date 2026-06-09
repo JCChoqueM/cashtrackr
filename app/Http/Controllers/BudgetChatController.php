@@ -41,7 +41,7 @@ class BudgetChatController extends Controller
                 $prompt,
                 provider: 'openrouter', // que proveedor va a usar
                 model: 'poolside/laguna-xs.2:free',// que modelo va a usar
-                // model: 'google/gemma-4-26b-a4b-it:free',
+                //  model: 'google/gemma-4-26b-a4b-it:free',
                 // model: 'nvidia/nemotron-3-super-120b-a12b:free',
                 // model: 'qwen/qwen3-coder:free',
                 // model: 'z-ai/glm-4.5-air:free',
