@@ -61,7 +61,8 @@ class SearchExpenses implements Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'value' => $schema->string()->required(),
+            'name' => $schema->string()->description('Texto para buscar en el nombre del gasto (ej: Uber, comida,renta,dentista)'),
+            'category' => $schema->string()->description('Categoría del gasto(ej: food, transport housing, suscriptions,other)'),
         ];
     }
 }
