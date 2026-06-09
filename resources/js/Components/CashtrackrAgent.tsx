@@ -4,10 +4,11 @@ import { DefaultChatTransport } from 'ai'; //funciones generales para la ia
 
 type Props = {
     budgetId: number
+    name:string
 }
 
 
-export default function CashTrackrAgent({budgetId}: Props) {
+export default function CashTrackrAgent({budgetId,name}: Props) {
 
     const [input, setInput] = useState('');
     const {sendMessage, messages}=useChat({  //recupera el mensaje envia y la respuesta del modelo
@@ -24,14 +25,22 @@ export default function CashTrackrAgent({budgetId}: Props) {
             <div className="space-y-3 mb-4 mt-8">
                 
                 {messages.map((m) => (
-                    <div key={m.id}>
+                    <div 
+                    key={m.id}
+                    className={`p-3 rounded-lg max-w-[80%] lg:max-w-[60%] ${
+                        m.role === 'user' 
+                        ? 'bg-amber-500 text-white ml-auto' 
+                        : 'bg-gray-100 mr-auto'
+                    }`}
+                    
+                    >
                         {m.parts.map((part,i)=>{
                             if(part.type !=='text')return null
                             const text= part.text.trim()
                             if(!text) return null
                             return(
                                 <p className='text-xl' key={i}>
-                                    <strong> {m.role==='user'?'Julio: ':'CashTrackr IA:'}</strong>{' '}
+                                    <strong> {m.role==='user'? `${name}: `:'CashTrackr IA:'}</strong>{' '}
                                     {text}
                                 </p>
                             )
