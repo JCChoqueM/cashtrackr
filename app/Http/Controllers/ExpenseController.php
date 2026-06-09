@@ -6,14 +6,17 @@ use App\Http\Requests\ExpenseRequest;
 use App\Models\Budget;
 use App\Models\Expense;
 use Illuminate\Routing\Attributes\Controllers\Authorize;
+use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Gate;
 
+#[Middleware('auth')]
+#[Middleware('verified')]
 class ExpenseController extends Controller
 {
     public function store(ExpenseRequest $request, Budget $budget)
     {
 
-        Gate::authorize('create',[Expense::class, $budget]);
+        Gate::authorize('create', [Expense::class, $budget]);
 
         $budget->expenses()->create($request->validated());
 
@@ -32,7 +35,7 @@ class ExpenseController extends Controller
             ->with('success', 'Gasto Actualizado Correctamente');
     }
 
-     #[Authorize('delete', 'expense')]
+    #[Authorize('delete', 'expense')]
     public function destroy(Budget $budget, Expense $expense)
     {
         $expense->delete();
