@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import {useChat} from '@ai-sdk/react' //enfoques, hook y ciertas funciones para react
 import { DefaultChatTransport } from 'ai'; //funciones generales para la ia
+import { toast } from 'react-toastify';
+import { router } from '@inertiajs/react';
 
 type Props = {
     budgetId: number
@@ -14,7 +16,24 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
     const {sendMessage, messages}=useChat({  //recupera el mensaje envia y la respuesta del modelo
         transport: new DefaultChatTransport({
             api:`/dashboard/budgets/${budgetId}/chat`
-        })
+        }),
+        //mensaje para no recargar los nuevos gatos
+        onFinish: ({message}) => {
+           const expenseCreated= message.parts.some(part => {
+            //    if(!part.output)return null
+            //    return part.output.startsWith('[EXPENSE_CREATED]')
+
+            //console.log(part.type) part.state
+
+            const isAddExpenseTool=part.type === 'tool-AddExpense'
+            const finished='state'in part && part.state==='output-available'
+            return isAddExpenseTool && finished
+           })
+           if(expenseCreated){
+               toast.success('Gasto registrado correctamete')
+               router.reload({only:['expenses','budget']})
+           }
+        },
     })
   
     console.log(messages)
@@ -36,7 +55,9 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
                     >
                         {m.parts.map((part,i)=>{
                             if(part.type !=='text')return null
-                            const text= part.text.trim()
+                            const text= part.text
+                            .replace('[EXPENSE_CREATED]','')
+                            .trim()
                             if(!text) return null
                             return(
                                 <p className='text-xl' key={i}>
