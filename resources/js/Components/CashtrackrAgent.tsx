@@ -17,7 +17,7 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
         transport: new DefaultChatTransport({
             api:`/dashboard/budgets/${budgetId}/chat`
         }),
-        //mensaje para no recargar los nuevos gatos
+        //mensaje para no recargar los nuevos gastos
         onFinish: ({message}) => {
            const expenseCreated= message.parts.some(part => {
             //    if(!part.output)return null
