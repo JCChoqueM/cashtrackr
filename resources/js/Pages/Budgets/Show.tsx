@@ -11,42 +11,40 @@ import { formatDate } from '@/utils';
 import ProgressBar from '@/Components/ProgressBar';
 import ExpenseDropdown from '@/Components/ExpenseDropdown';
 import DeleteExpenseModal from '@/Components/DeleteExpenseModal';
+import CashTrackrAgent from '@/Components/CashtrackrAgent';
 
 type Props = {
   budget: Budget;
   categories: Category[];
-  spent:string;
+  spent: string;
 };
 
-export default function Show({ budget, categories,spent }: Props) {
+export default function Show({ budget, categories, spent }: Props) {
   const { flash } = usePage().props;
-   useEffect(() => {
+  useEffect(() => {
     if (flash.success) {
       toast.success(flash.success);
     }
   }, [flash]);
 
   const openCreateModal = useExpenseModalStore((state) => state.openCreateModal);
- 
-
 
   const remaining = +budget.amount - +spent;
   const percentageUsed = +((+spent / +budget.amount) * 100).toFixed(2);
   const [progress, setProgress] = useState(0);
- 
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setProgress(percentageUsed);
-    },100);
+    }, 100);
 
     return () => clearTimeout(timeout);
   }, [percentageUsed]);
 
   useEffect(() => {
-     useExpenseModalStore.getState().setBudget(budget);
-  useExpenseModalStore.getState().setCategories(categories);
-  },[budget,categories]);
-
+    useExpenseModalStore.getState().setBudget(budget);
+    useExpenseModalStore.getState().setCategories(categories);
+  }, [budget, categories]);
 
   return (
     <>
@@ -132,7 +130,6 @@ export default function Show({ budget, categories,spent }: Props) {
                           <p className="text-sm text-gray-400">Agregado el: {formatDate(expense.created_at)}</p>
                         </td>
                         <td className="py-6 px-10 flex justify-end gap-3">
-
                           <ExpenseDropdown expense={expense} />
                         </td>
                       </tr>
@@ -155,7 +152,7 @@ export default function Show({ budget, categories,spent }: Props) {
           </p>
         )}
       </section>
-
+      <CashTrackrAgent budgetId={budget.id} />
       <ExpenseModal />
       <DeleteExpenseModal />
       <ToastContainer />
