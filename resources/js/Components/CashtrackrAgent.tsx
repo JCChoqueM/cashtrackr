@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import {useChat} from '@ai-sdk/react' //enfoques, hook y ciertas funciones para react
+import { DefaultChatTransport } from 'ai'; //funciones generales para la ia
 
 type Props = {
     budgetId: number
@@ -8,6 +10,12 @@ type Props = {
 export default function CashTrackrAgent({budgetId}: Props) {
 
     const [input, setInput] = useState('');
+    const {sendMessage, messages}=useChat({
+        transport: new DefaultChatTransport({
+            api:`/dashboard/budgets/${budgetId}/chat`
+        })
+    })
+  
 
     return (
         <section className='p-10 lg:px-5 shadow-lg mt-10'>
@@ -15,7 +23,14 @@ export default function CashTrackrAgent({budgetId}: Props) {
             <div className="space-y-3 mb-4 mt-8"></div>
             
             <form
-                onSubmit={() => {} }
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    if(input.trim()){
+                        sendMessage({text: input})
+                        setInput('')
+                    }
+                 
+                } }
                 className="flex flex-col gap-2"
             >
                 <textarea
