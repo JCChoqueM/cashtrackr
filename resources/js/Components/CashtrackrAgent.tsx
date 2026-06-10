@@ -13,7 +13,7 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
   const [input, setInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { sendMessage, messages, setMessages } = useChat({
+  const { sendMessage, messages, setMessages, status } = useChat({
     //recupera el mensaje envia y la respuesta del modelo
     transport: new DefaultChatTransport({
       api: `/dashboard/budgets/${budgetId}/chat`,
@@ -24,7 +24,7 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
         //    if(!part.output)return null
         //    return part.output.startsWith('[EXPENSE_CREATED]')
 
-        console.log(part.type) 
+        //console.log(part.type)
         // console.log(part.state)
 
         const isAddExpenseTool = part.type === 'tool-AddExpense';
@@ -56,36 +56,35 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
     ]);
     //subir la imagen
     try {
-            const csrfToken=document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content??''
-            const formData = new FormData();
-            formData.append('image', file);
+      const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
+      const formData = new FormData();
+      formData.append('image', file);
 
-        const response =await fetch(`/dashboard/budgets/${budgetId}/scan-ticket`,{ //uri para la peticion de ticketscan
-            method:'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-            },
-            credentials:'same-origin',
-            body:formData
-        })
-        const data = await response.json()
+      const response = await fetch(`/dashboard/budgets/${budgetId}/scan-ticket`, {
+        //uri para la peticion de ticketscan
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+          Accept: 'application/json',
+        },
+        credentials: 'same-origin',
+        body: formData,
+      });
+      const data = await response.json();
 
-        setMessages((prev) => [
-            ...prev,
-            {
-                id: crypto.randomUUID(),
-                role: 'assistant' as const,
-                content: data.message,
-                parts: [{ type: 'text' as const, text: data.message }],
-            },
-        ]);
-        if(data.success){
-            toast.success('Gastos del Ticket Registrados')
-          router.reload()
-        }
-
-
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: 'assistant' as const,
+          content: data.message,
+          parts: [{ type: 'text' as const, text: data.message }],
+        },
+      ]);
+      if (data.success) {
+        toast.success('Gastos del Ticket Registrados');
+        router.reload();
+      }
     } catch (error) {
       console.error('Error al procesar el Ticket:', error);
 
@@ -102,6 +101,9 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
+
+  //console.log(status);
+  const isBusy = status === 'streaming' || status === 'submitted';
 
   return (
     <section className="p-10 lg:px-5 shadow-lg mt-10">
@@ -146,18 +148,21 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Consulta dudas sobre tu Presupuesto o Agrega Gastos"
           className="w-full border border-gray-300 p-3 rounded-lg text-xl"
+          disabled={isBusy}
         />
         <div className="flex gap-2">
           <button
             type="submit"
             className="flex-1 mt-5 bg-purple-950 hover:bg-purple-800 p-3 rounded-lg text-white font-bold text-xl cursor-pointer disabled:opacity-20"
+            disabled={isBusy || !input.trim()} //habilita deshabilita el boton de consultar si esta trabanjando o esta vacio
           >
-            Consultar
+            {status === 'streaming' ? 'Pensando...' : 'Consultar'}
           </button>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className="mt-5 bg-amber-500 hover:bg-amber-500 p-3 rounded-lg text-white font-bold text-xl cursor-pointer disabled:opacity-20"
+            disabled={isBusy}
           >
             Subir Ticket
           </button>
