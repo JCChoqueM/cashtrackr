@@ -24,7 +24,8 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
         //    if(!part.output)return null
         //    return part.output.startsWith('[EXPENSE_CREATED]')
 
-        //console.log(part.type) part.state
+        console.log(part.type) 
+        // console.log(part.state)
 
         const isAddExpenseTool = part.type === 'tool-AddExpense';
         const finished = 'state' in part && part.state === 'output-available';
@@ -59,7 +60,7 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
             const formData = new FormData();
             formData.append('image', file);
 
-        const response =await fetch(`/dashboard/budgets/${budgetId}/scan-ticket`,{
+        const response =await fetch(`/dashboard/budgets/${budgetId}/scan-ticket`,{ //uri para la peticion de ticketscan
             method:'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -68,6 +69,21 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
             credentials:'same-origin',
             body:formData
         })
+        const data = await response.json()
+
+        setMessages((prev) => [
+            ...prev,
+            {
+                id: crypto.randomUUID(),
+                role: 'assistant' as const,
+                content: data.message,
+                parts: [{ type: 'text' as const, text: data.message }],
+            },
+        ]);
+        if(data.success){
+            toast.success('Gastos del Ticket Registrados')
+          router.reload()
+        }
 
 
     } catch (error) {
