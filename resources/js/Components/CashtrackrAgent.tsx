@@ -11,6 +11,7 @@ type Props = {
 
 export default function CashTrackrAgent({ budgetId, name }: Props) {
   const [input, setInput] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { sendMessage, messages, setMessages, status } = useChat({
@@ -44,6 +45,8 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
     const file = e.target.files?.[0];
 
     if (!file) return;
+
+    setIsScanning(true);
 
     setMessages((prev) => [
       ...prev,
@@ -98,12 +101,13 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
         },
       ]);
     } finally {
+      setIsScanning(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
   //console.log(status);
-  const isBusy = status === 'streaming' || status === 'submitted';
+  const isBusy = status === 'streaming' || status === 'submitted' || isScanning;
 
   return (
     <section className="p-10 lg:px-5 shadow-lg mt-10">
@@ -131,6 +135,15 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
             })}
           </div>
         ))}
+        {isScanning && (
+          <div className="bg-gray-100 mr-auto max-w-[80%] lg:max-w-[60%] p-3 rounded-lg">
+              <p className="text-xl">
+                <strong> CashTrackr IA: </strong> Escaneando Ticket...
+              </p>
+
+
+          </div>
+        )}
       </div>
 
       <form
@@ -164,7 +177,7 @@ export default function CashTrackrAgent({ budgetId, name }: Props) {
             className="mt-5 bg-amber-500 hover:bg-amber-500 p-3 rounded-lg text-white font-bold text-xl cursor-pointer disabled:opacity-20"
             disabled={isBusy}
           >
-            Subir Ticket
+            {isScanning ? 'Escaneando...' : 'Subir Ticket'}
           </button>
         </div>
         <input
