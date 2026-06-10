@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {useChat} from '@ai-sdk/react' //enfoques, hook y ciertas funciones para react
 import { DefaultChatTransport } from 'ai'; //funciones generales para la ia
 import { toast } from 'react-toastify';
@@ -13,7 +13,10 @@ type Props = {
 export default function CashTrackrAgent({budgetId,name}: Props) {
 
     const [input, setInput] = useState('');
-    const {sendMessage, messages}=useChat({  //recupera el mensaje envia y la respuesta del modelo
+    const fileInputRef =useRef<HTMLInputElement>(null)
+
+
+    const {sendMessage, messages , setMessages}=useChat({  //recupera el mensaje envia y la respuesta del modelo
         transport: new DefaultChatTransport({
             api:`/dashboard/budgets/${budgetId}/chat`
         }),
@@ -37,6 +40,31 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
     })
   
     console.log(messages)
+
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        const file =e.target.files?.[0]
+
+        if(!file) return
+
+        setMessages(prev => [
+            ...prev,
+            {
+                id:crypto.randomUUID(),
+                role:'user' as const,
+                content: 'Ticket de Compra subido',
+                parts:[{type:'text' as const, text:'Ticket de Compra subido'}]
+            }
+        ])
+        
+        try {
+            
+        } catch (error) {
+            
+        }
+
+    }
 
     return (
         <section className='p-10 lg:px-5 shadow-lg mt-10'>
@@ -96,7 +124,7 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
                     </button>
                     <button
                         type="button"
-                        onClick={() => {} }
+                        onClick={() => fileInputRef.current?.click()} 
                         className="mt-5 bg-amber-500 hover:bg-amber-500 p-3 rounded-lg text-white font-bold text-xl cursor-pointer disabled:opacity-20"
                     >
                         Subir Ticket
@@ -106,6 +134,8 @@ export default function CashTrackrAgent({budgetId,name}: Props) {
                     type="file"
                     accept="image/*"
                     className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
                 />
             </form>
         </section>
